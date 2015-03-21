@@ -1398,7 +1398,7 @@ namespace std
 #define _GLIBCXX_USE_WCHAR_T 1
 
 /* Define to 1 if a verbose library is built, or 0 otherwise. */
-#define _GLIBCXX_VERBOSE 1
+#define _GLIBCXX_VERBOSE 0
 
 /* Defined if as can handle rdrand. */
 /* #undef _GLIBCXX_X86_RDRAND */

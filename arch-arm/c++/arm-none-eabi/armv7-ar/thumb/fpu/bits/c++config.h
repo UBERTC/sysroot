@@ -1,6 +1,6 @@
 // Predefined symbols and macros -*- C++ -*-
 
-// Copyright (C) 1997-2013 Free Software Foundation, Inc.
+// Copyright (C) 1997-2014 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -31,7 +31,7 @@
 #define _GLIBCXX_CXX_CONFIG_H 1
 
 // The current version of the C++ library in compressed ISO date format.
-#define __GLIBCXX__ 20140913
+#define __GLIBCXX__ 20150128
 
 // Macros for various attributes.
 //   _GLIBCXX_PURE
@@ -169,6 +169,8 @@
     namespace placeholders { }
     namespace regex_constants { }
     namespace this_thread { }
+
+    namespace experimental { }
   }
 
   namespace abi { }
@@ -221,6 +223,8 @@ namespace std
   namespace placeholders { inline namespace __7 { } }
   namespace regex_constants { inline namespace __7 { } }
   namespace this_thread { inline namespace __7 { } }
+
+  namespace experimental { inline namespace __7 { } }
 
   namespace __detail { inline namespace __7 { } }
 }
@@ -1269,17 +1273,18 @@ namespace std
 
 /* Define if C99 functions or macros in <math.h> should be imported in
    <tr1/cmath> in namespace std::tr1. */
-/* #undef _GLIBCXX_USE_C99_MATH_TR1 */
+#define _GLIBCXX_USE_C99_MATH_TR1 1
 
 /* Define if C99 types in <stdint.h> should be imported in <tr1/cstdint> in
    namespace std::tr1. */
 #define _GLIBCXX_USE_C99_STDINT_TR1 1
 
+/* Defined if clock_gettime syscall has monotonic and realtime clock support.
+   */
+/* #undef _GLIBCXX_USE_CLOCK_GETTIME_SYSCALL */
+
 /* Defined if clock_gettime has monotonic clock support. */
 /* #undef _GLIBCXX_USE_CLOCK_MONOTONIC */
-
-/* Defined if clock_gettime syscall has monotonic and realtime clock support. */
-/* #undef _GLIBCXX_USE_CLOCK_GETTIME_SYSCALL */
 
 /* Defined if clock_gettime has realtime clock support. */
 /* #undef _GLIBCXX_USE_CLOCK_REALTIME */
@@ -1331,11 +1336,14 @@ namespace std
 /* Define if sysctl(), CTL_HW and HW_NCPU are available in <sys/sysctl.h>. */
 /* #undef _GLIBCXX_USE_SYSCTL_HW_NCPU */
 
+/* Define if obsolescent tmpnam is available in <stdio.h>. */
+#define _GLIBCXX_USE_TMPNAM 1
+
 /* Define if code specialized for wchar_t should be used. */
 #define _GLIBCXX_USE_WCHAR_T 1
 
 /* Define to 1 if a verbose library is built, or 0 otherwise. */
-#define _GLIBCXX_VERBOSE 0
+#define _GLIBCXX_VERBOSE 1
 
 /* Defined if as can handle rdrand. */
 /* #undef _GLIBCXX_X86_RDRAND */

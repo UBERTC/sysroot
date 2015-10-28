@@ -1,6 +1,6 @@
 // Predefined symbols and macros -*- C++ -*-
 
-// Copyright (C) 1997-2014 Free Software Foundation, Inc.
+// Copyright (C) 1997-2015 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -31,7 +31,7 @@
 #define _GLIBCXX_CXX_CONFIG_H 1
 
 // The current version of the C++ library in compressed ISO date format.
-#define __GLIBCXX__ 20150128
+#define __GLIBCXX__ 20150716
 
 // Macros for various attributes.
 //   _GLIBCXX_PURE
@@ -103,6 +103,14 @@
 # endif
 #endif
 
+#ifndef _GLIBCXX14_CONSTEXPR
+# if __cplusplus >= 201402L
+#  define _GLIBCXX14_CONSTEXPR constexpr
+# else
+#  define _GLIBCXX14_CONSTEXPR
+# endif
+#endif
+
 // Macro for noexcept, to support in mixed 03/0x mode.
 #ifndef _GLIBCXX_NOEXCEPT
 # if __cplusplus >= 201103L
@@ -121,7 +129,7 @@
 #endif
 
 #ifndef _GLIBCXX_THROW_OR_ABORT
-# if __EXCEPTIONS
+# if __cpp_exceptions
 #  define _GLIBCXX_THROW_OR_ABORT(_EXC) (throw (_EXC))
 # else
 #  define _GLIBCXX_THROW_OR_ABORT(_EXC) (__builtin_abort())
@@ -193,6 +201,37 @@ namespace std
 #endif
 }
 
+# define _GLIBCXX_USE_DUAL_ABI 1
+
+#if ! _GLIBCXX_USE_DUAL_ABI
+// Ignore any pre-defined value of _GLIBCXX_USE_CXX11_ABI
+# undef _GLIBCXX_USE_CXX11_ABI
+#endif
+
+#ifndef _GLIBCXX_USE_CXX11_ABI
+# define _GLIBCXX_USE_CXX11_ABI 1
+#endif
+
+#if _GLIBCXX_USE_CXX11_ABI
+namespace std
+{
+  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+}
+namespace __gnu_cxx
+{
+  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
+}
+# define _GLIBCXX_NAMESPACE_CXX11 __cxx11::
+# define _GLIBCXX_BEGIN_NAMESPACE_CXX11 namespace __cxx11 {
+# define _GLIBCXX_END_NAMESPACE_CXX11 }
+# define _GLIBCXX_DEFAULT_ABI_TAG _GLIBCXX_ABI_TAG_CXX11
+#else
+# define _GLIBCXX_NAMESPACE_CXX11
+# define _GLIBCXX_BEGIN_NAMESPACE_CXX11
+# define _GLIBCXX_END_NAMESPACE_CXX11
+# define _GLIBCXX_DEFAULT_ABI_TAG
+#endif
+
 
 // Defined if inline namespaces are used for versioning.
 # define _GLIBCXX_INLINE_VERSION 0 
@@ -250,9 +289,13 @@ namespace std
   // Non-inline namespace for components replaced by alternates in active mode.
   namespace __cxx1998
   {
-#if _GLIBCXX_INLINE_VERSION
- inline namespace __7 { }
-#endif
+# if _GLIBCXX_INLINE_VERSION
+  inline namespace __7 { }
+# endif
+
+# if _GLIBCXX_USE_CXX11_ABI
+  inline namespace __cxx11 __attribute__((__abi_tag__)) { }
+# endif
   }
 
   // Inline namespace for debug mode.
@@ -358,6 +401,15 @@ namespace std
 # define _GLIBCXX_NAMESPACE_LDBL
 # define _GLIBCXX_BEGIN_NAMESPACE_LDBL
 # define _GLIBCXX_END_NAMESPACE_LDBL
+#endif
+#if _GLIBCXX_USE_CXX11_ABI
+# define _GLIBCXX_NAMESPACE_LDBL_OR_CXX11 _GLIBCXX_NAMESPACE_CXX11
+# define _GLIBCXX_BEGIN_NAMESPACE_LDBL_OR_CXX11 _GLIBCXX_BEGIN_NAMESPACE_CXX11
+# define _GLIBCXX_END_NAMESPACE_LDBL_OR_CXX11 _GLIBCXX_END_NAMESPACE_CXX11
+#else
+# define _GLIBCXX_NAMESPACE_LDBL_OR_CXX11 _GLIBCXX_NAMESPACE_LDBL
+# define _GLIBCXX_BEGIN_NAMESPACE_LDBL_OR_CXX11 _GLIBCXX_BEGIN_NAMESPACE_LDBL
+# define _GLIBCXX_END_NAMESPACE_LDBL_OR_CXX11 _GLIBCXX_END_NAMESPACE_LDBL
 #endif
 
 // Assert.
@@ -1320,6 +1372,9 @@ namespace std
 /* Define if pthreads_num_processors_np is available in <pthread.h>. */
 /* #undef _GLIBCXX_USE_PTHREADS_NUM_PROCESSORS_NP */
 
+/* Define if POSIX read/write locks are available in <gthr.h>. */
+/* #undef _GLIBCXX_USE_PTHREAD_RWLOCK_T */
+
 /* Define if /dev/random and /dev/urandom are available for the random_device
    of TR1 (Chapter 5.1). */
 /* #undef _GLIBCXX_USE_RANDOM_TR1 */
@@ -1343,7 +1398,7 @@ namespace std
 #define _GLIBCXX_USE_WCHAR_T 1
 
 /* Define to 1 if a verbose library is built, or 0 otherwise. */
-#define _GLIBCXX_VERBOSE 0
+#define _GLIBCXX_VERBOSE 1
 
 /* Defined if as can handle rdrand. */
 /* #undef _GLIBCXX_X86_RDRAND */

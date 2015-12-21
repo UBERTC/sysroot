@@ -7,20 +7,13 @@
  ***   structures, and macros generated from the original header, and thus,
  ***   contains no copyrightable information.
  ***
+ ***   To edit the content of this header, modify the corresponding
+ ***   source file (e.g. under external/kernel-headers/original/) then
+ ***   run bionic/libc/kernel/tools/update_all.py
+ ***
+ ***   Any manual change here will be lost the next time this script will
+ ***   be run. You've been warned!
+ ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _ASMARM_SEMBUF_H
-#define _ASMARM_SEMBUF_H
-
-struct semid64_ds {
- struct ipc64_perm sem_perm;
- __kernel_time_t sem_otime;
- unsigned long __unused1;
- __kernel_time_t sem_ctime;
- unsigned long __unused2;
- unsigned long sem_nsems;
- unsigned long __unused3;
- unsigned long __unused4;
-};
-
-#endif
+#include <asm-generic/sembuf.h>

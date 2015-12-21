@@ -38,15 +38,18 @@
 #ifndef	_STDIO_H_
 #define	_STDIO_H_
 
+/*
+ * This file must contain a reference to __gnuc_va_list so that GCC's
+ * fixincludes knows that that's what's being used for va_list, and so
+ * to leave our <stdio.h> alone. (fixincludes gets in the way of pointing
+ * one toolchain at various different sets of platform headers.)
+ * If you alter this comment, be sure to keep "__gnuc_va_list" in it!
+ */
+
 #include <sys/cdefs.h>
 #include <sys/types.h>
 
-/* va_list and size_t must be defined by stdio.h according to Posix */
-#define __need___va_list
 #include <stdarg.h>
-
-/* note that this forces stddef.h to *only* define size_t */
-#define __need_size_t
 #include <stddef.h>
 
 #define __need_NULL
@@ -63,10 +66,17 @@ typedef off_t fpos_t;		/* stdio file position type */
  */
 
 /* stdio buffers */
+#if defined(__LP64__)
+struct __sbuf {
+  unsigned char* _base;
+  size_t _size;
+};
+#else
 struct __sbuf {
 	unsigned char *_base;
 	int	_size;
 };
+#endif
 
 /*
  * stdio state variables.
@@ -99,8 +109,13 @@ typedef	struct __sFILE {
 	unsigned char *_p;	/* current position in (some) buffer */
 	int	_r;		/* read space left for getc() */
 	int	_w;		/* write space left for putc() */
+#if defined(__LP64__)
+	int	_flags;		/* flags, below; this FILE is free if 0 */
+	int	_file;		/* fileno, if Unix descriptor, else -1 */
+#else
 	short	_flags;		/* flags, below; this FILE is free if 0 */
 	short	_file;		/* fileno, if Unix descriptor, else -1 */
+#endif
 	struct	__sbuf _bf;	/* the buffer (at least 1 byte, if !NULL) */
 	int	_lbfsize;	/* 0 or -_bf._size, for inline putc */
 
@@ -144,11 +159,12 @@ __END_DECLS
 #define	__SMBF	0x0080		/* _buf is from malloc */
 #define	__SAPP	0x0100		/* fdopen()ed in append mode */
 #define	__SSTR	0x0200		/* this is an sprintf/snprintf string */
-#define	__SOPT	0x0400		/* do fseek() optimisation */
-#define	__SNPT	0x0800		/* do not do fseek() optimisation */
+#define	__SOPT	0x0400		/* do fseek() optimization */
+#define	__SNPT	0x0800		/* do not do fseek() optimization */
 #define	__SOFF	0x1000		/* set iff _offset is in fact correct */
 #define	__SMOD	0x2000		/* true => fgetln modified _p text */
 #define	__SALC	0x4000		/* allocate string space dynamically */
+#define	__SIGN	0x8000		/* ignore this file in _fwalk */
 
 /*
  * The following three definitions are for ANSI C, which took them
@@ -164,14 +180,14 @@ __END_DECLS
 #define	_IONBF	2		/* setvbuf should set unbuffered */
 
 #define	BUFSIZ	1024		/* size of buffer used by setbuf */
-
 #define	EOF	(-1)
 
 /*
- * FOPEN_MAX is a minimum maximum, and should be the number of descriptors
- * that the kernel can provide without allocation of a resource that can
- * fail without the process sleeping.  Do not use this for anything.
+ * FOPEN_MAX is a minimum maximum, and is the number of streams that
+ * stdio can provide without attempting to allocate further resources
+ * (which could fail).  Do not use this for anything.
  */
+
 #define	FOPEN_MAX	20	/* must be <= OPEN_MAX <sys/syslimits.h> */
 #define	FILENAME_MAX	1024	/* must be <= PATH_MAX <sys/syslimits.h> */
 
@@ -182,6 +198,7 @@ __END_DECLS
 #define	L_tmpnam	1024	/* XXX must be == PATH_MAX */
 #define	TMP_MAX		308915776
 
+/* Always ensure that these are consistent with <fcntl.h> and <unistd.h>! */
 #ifndef SEEK_SET
 #define	SEEK_SET	0	/* set file offset to offset */
 #endif
@@ -206,66 +223,85 @@ int	 feof(FILE *);
 int	 ferror(FILE *);
 int	 fflush(FILE *);
 int	 fgetc(FILE *);
-int	 fgetpos(FILE *, fpos_t *);
-char	*fgets(char *, int, FILE *);
-FILE	*fopen(const char *, const char *);
-int	 fprintf(FILE *, const char *, ...);
+char	*fgets(char * __restrict, int, FILE * __restrict);
+FILE	*fopen(const char * __restrict , const char * __restrict);
+int	 fprintf(FILE * __restrict , const char * __restrict, ...)
+		__printflike(2, 3);
 int	 fputc(int, FILE *);
-int	 fputs(const char *, FILE *);
-size_t	 fread(void *, size_t, size_t, FILE *);
-FILE	*freopen(const char *, const char *, FILE *);
-int	 fscanf(FILE *, const char *, ...);
+int	 fputs(const char * __restrict, FILE * __restrict);
+size_t	 fread(void * __restrict, size_t, size_t, FILE * __restrict);
+FILE	*freopen(const char * __restrict, const char * __restrict,
+	    FILE * __restrict);
+int	 fscanf(FILE * __restrict, const char * __restrict, ...)
+		__scanflike(2, 3);
 int	 fseek(FILE *, long, int);
-int	 fseeko(FILE *, off_t, int);
-int	 fsetpos(FILE *, const fpos_t *);
 long	 ftell(FILE *);
-off_t	 ftello(FILE *);
-size_t	 fwrite(const void *, size_t, size_t, FILE *);
+size_t	 fwrite(const void * __restrict, size_t, size_t, FILE * __restrict);
 int	 getc(FILE *);
 int	 getchar(void);
-char	*gets(char *);
-#if __BSD_VISIBLE && !defined(__SYS_ERRLIST)
-#define __SYS_ERRLIST
+ssize_t	 getdelim(char ** __restrict, size_t * __restrict, int,
+	    FILE * __restrict);
+ssize_t	 getline(char ** __restrict, size_t * __restrict, FILE * __restrict);
 
-extern int sys_nerr;			/* perror(3) external variables */
-extern char *sys_errlist[];
-#endif
 void	 perror(const char *);
-int	 printf(const char *, ...);
+int	 printf(const char * __restrict, ...)
+		__printflike(1, 2);
 int	 putc(int, FILE *);
 int	 putchar(int);
 int	 puts(const char *);
 int	 remove(const char *);
-int	 rename(const char *, const char *);
 void	 rewind(FILE *);
-int	 scanf(const char *, ...);
-void	 setbuf(FILE *, char *);
-int	 setvbuf(FILE *, char *, int, size_t);
-int	 sprintf(char *, const char *, ...);
-int	 sscanf(const char *, const char *, ...);
+int	 scanf(const char * __restrict, ...)
+		__scanflike(1, 2);
+void	 setbuf(FILE * __restrict, char * __restrict);
+int	 setvbuf(FILE * __restrict, char * __restrict, int, size_t);
+int	 sscanf(const char * __restrict, const char * __restrict, ...)
+		__scanflike(2, 3);
 FILE	*tmpfile(void);
-char	*tmpnam(char *);
 int	 ungetc(int, FILE *);
-int	 vfprintf(FILE *, const char *, __va_list);
-int	 vprintf(const char *, __va_list);
-int	 vsprintf(char *, const char *, __va_list);
+int	 vfprintf(FILE * __restrict, const char * __restrict, __va_list)
+		__printflike(2, 0);
+int	 vprintf(const char * __restrict, __va_list)
+		__printflike(1, 0);
+
+int dprintf(int, const char * __restrict, ...) __printflike(2, 3);
+int vdprintf(int, const char * __restrict, __va_list) __printflike(2, 0);
+
+#ifndef __AUDIT__
+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 201112L
+char* gets(char*) __warnattr("gets is very unsafe; consider using fgets");
+#endif
+int sprintf(char* __restrict, const char* __restrict, ...)
+    __printflike(2, 3); //__warnattr("sprintf is often misused; please use snprintf");
+char* tmpnam(char*) __warnattr("tmpnam possibly used unsafely; consider using mkstemp");
+int vsprintf(char* __restrict, const char* __restrict, __va_list)
+    __printflike(2, 0); //__warnattr("vsprintf is often misused; please use vsnprintf");
+#if __XPG_VISIBLE
+char* tempnam(const char*, const char*)
+    __warnattr("tempnam possibly used unsafely; consider using mkstemp");
+#endif
+#endif
+
+extern int rename(const char*, const char*);
+extern int renameat(int, const char*, int, const char*);
+
+int	 fgetpos(FILE * __restrict, fpos_t * __restrict);
+int	 fsetpos(FILE *, const fpos_t *);
+
+int	 fseeko(FILE *, off_t, int);
+off_t	 ftello(FILE *);
 
 #if __ISO_C_VISIBLE >= 1999 || __BSD_VISIBLE
-int	 snprintf(char *, size_t, const char *, ...)
-		__attribute__((__format__ (printf, 3, 4)))
-		__attribute__((__nonnull__ (3)));
-int	 vfscanf(FILE *, const char *, __va_list)
-		__attribute__((__format__ (scanf, 2, 0)))
-		__attribute__((__nonnull__ (2)));
+int	 snprintf(char * __restrict, size_t, const char * __restrict, ...)
+		__printflike(3, 4);
+int	 vfscanf(FILE * __restrict, const char * __restrict, __va_list)
+		__scanflike(2, 0);
 int	 vscanf(const char *, __va_list)
-		__attribute__((__format__ (scanf, 1, 0)))
-		__attribute__((__nonnull__ (1)));
-int	 vsnprintf(char *, size_t, const char *, __va_list)
-		__attribute__((__format__ (printf, 3, 0)))
-		__attribute__((__nonnull__ (3)));
-int	 vsscanf(const char *, const char *, __va_list)
-		__attribute__((__format__ (scanf, 2, 0)))
-		__attribute__((__nonnull__ (2)));
+		__scanflike(1, 0);
+int	 vsnprintf(char * __restrict, size_t, const char * __restrict, __va_list)
+		__printflike(3, 0);
+int	 vsscanf(const char * __restrict, const char * __restrict, __va_list)
+		__scanflike(2, 0);
 #endif /* __ISO_C_VISIBLE >= 1999 || __BSD_VISIBLE */
 
 __END_DECLS
@@ -276,13 +312,8 @@ __END_DECLS
  */
 #if __BSD_VISIBLE || __POSIX_VISIBLE || __XPG_VISIBLE
 #define	L_ctermid	1024	/* size for ctermid(); PATH_MAX */
-#define L_cuserid	9	/* size for cuserid(); UT_NAMESIZE + 1 */
 
 __BEGIN_DECLS
-#if 0 /* MISSING FROM BIONIC */
-char	*ctermid(char *);
-char	*cuserid(char *);
-#endif /* MISSING */
 FILE	*fdopen(int, const char *);
 int	 fileno(FILE *);
 
@@ -306,9 +337,6 @@ int	 putc_unlocked(int, FILE *);
 int	 putchar_unlocked(int);
 #endif /* __POSIX_VISIBLE >= 199506 */
 
-#if __XPG_VISIBLE
-char	*tempnam(const char *, const char *);
-#endif
 __END_DECLS
 
 #endif /* __BSD_VISIBLE || __POSIX_VISIBLE || __XPG_VISIBLE */
@@ -318,18 +346,15 @@ __END_DECLS
  */
 #if __BSD_VISIBLE
 __BEGIN_DECLS
-int	 asprintf(char **, const char *, ...)
-		__attribute__((__format__ (printf, 2, 3)))
-		__attribute__((__nonnull__ (2)));
-char	*fgetln(FILE *, size_t *);
+int	 asprintf(char ** __restrict, const char * __restrict, ...)
+		__printflike(2, 3);
+char	*fgetln(FILE * __restrict, size_t * __restrict);
 int	 fpurge(FILE *);
-int	 getw(FILE *);
-int	 putw(int, FILE *);
 void	 setbuffer(FILE *, char *, int);
 int	 setlinebuf(FILE *);
-int	 vasprintf(char **, const char *, __va_list)
-		__attribute__((__format__ (printf, 2, 0)))
-		__attribute__((__nonnull__ (2)));
+int	 vasprintf(char ** __restrict, const char * __restrict,
+    __va_list)
+		__printflike(2, 0);
 __END_DECLS
 
 /*
@@ -346,87 +371,95 @@ __END_DECLS
 #define	fwopen(cookie, fn) funopen(cookie, 0, fn, 0, 0)
 #endif /* __BSD_VISIBLE */
 
-/*
- * Functions internal to the implementation.
- */
+#if defined(__BIONIC_FORTIFY)
+
 __BEGIN_DECLS
-int	__srget(FILE *);
-int	__swbuf(int, FILE *);
+
+__BIONIC_FORTIFY_INLINE
+__printflike(3, 0)
+int vsnprintf(char *dest, size_t size, const char *format, __va_list ap)
+{
+    return __builtin___vsnprintf_chk(dest, size, 0, __bos(dest), format, ap);
+}
+
+__BIONIC_FORTIFY_INLINE
+__printflike(2, 0)
+int vsprintf(char *dest, const char *format, __va_list ap)
+{
+    return __builtin___vsprintf_chk(dest, 0, __bos(dest), format, ap);
+}
+
+#if defined(__clang__)
+  #if !defined(snprintf)
+    #define __wrap_snprintf(dest, size, ...) __builtin___snprintf_chk(dest, size, 0, __bos(dest), __VA_ARGS__)
+    #define snprintf(...) __wrap_snprintf(__VA_ARGS__)
+  #endif
+#else
+__BIONIC_FORTIFY_INLINE
+__printflike(3, 4)
+int snprintf(char *dest, size_t size, const char *format, ...)
+{
+    return __builtin___snprintf_chk(dest, size, 0,
+        __bos(dest), format, __builtin_va_arg_pack());
+}
+#endif
+
+#if defined(__clang__)
+  #if !defined(sprintf)
+    #define __wrap_sprintf(dest, ...) __builtin___sprintf_chk(dest, 0, __bos(dest), __VA_ARGS__)
+    #define sprintf(...) __wrap_sprintf(__VA_ARGS__)
+  #endif
+#else
+__BIONIC_FORTIFY_INLINE
+__printflike(2, 3)
+int sprintf(char *dest, const char *format, ...)
+{
+    return __builtin___sprintf_chk(dest, 0,
+        __bos(dest), format, __builtin_va_arg_pack());
+}
+#endif
+
+extern char* __fgets_chk(char*, int, FILE*, size_t);
+extern char* __fgets_real(char*, int, FILE*) __asm__(__USER_LABEL_PREFIX__ "fgets");
+__errordecl(__fgets_too_big_error, "fgets called with size bigger than buffer");
+__errordecl(__fgets_too_small_error, "fgets called with size less than zero");
+
+#if !defined(__clang__)
+
+__BIONIC_FORTIFY_INLINE
+char *fgets(char* dest, int size, FILE* stream) {
+    size_t bos = __bos(dest);
+
+    // Compiler can prove, at compile time, that the passed in size
+    // is always negative. Force a compiler error.
+    if (__builtin_constant_p(size) && (size < 0)) {
+        __fgets_too_small_error();
+    }
+
+    // Compiler doesn't know destination size. Don't call __fgets_chk
+    if (bos == __BIONIC_FORTIFY_UNKNOWN_SIZE) {
+        return __fgets_real(dest, size, stream);
+    }
+
+    // Compiler can prove, at compile time, that the passed in size
+    // is always <= the actual object size. Don't call __fgets_chk
+    if (__builtin_constant_p(size) && (size <= (int) bos)) {
+        return __fgets_real(dest, size, stream);
+    }
+
+    // Compiler can prove, at compile time, that the passed in size
+    // is always > the actual object size. Force a compiler error.
+    if (__builtin_constant_p(size) && (size > (int) bos)) {
+        __fgets_too_big_error();
+    }
+
+    return __fgets_chk(dest, size, stream, bos);
+}
+
+#endif /* !defined(__clang__) */
+
 __END_DECLS
 
-/*
- * The __sfoo macros are here so that we can
- * define function versions in the C library.
- */
-#define	__sgetc(p) (--(p)->_r < 0 ? __srget(p) : (int)(*(p)->_p++))
-#if defined(__GNUC__)
-static __inline int __sputc(int _c, FILE *_p) {
-	if (--_p->_w >= 0 || (_p->_w >= _p->_lbfsize && (char)_c != '\n'))
-		return (*_p->_p++ = _c);
-	else
-		return (__swbuf(_c, _p));
-}
-#else
-/*
- * This has been tuned to generate reasonable code on the vax using pcc.
- */
-#define	__sputc(c, p) \
-	(--(p)->_w < 0 ? \
-		(p)->_w >= (p)->_lbfsize ? \
-			(*(p)->_p = (c)), *(p)->_p != '\n' ? \
-				(int)*(p)->_p++ : \
-				__swbuf('\n', p) : \
-			__swbuf((int)(c), p) : \
-		(*(p)->_p = (c), (int)*(p)->_p++))
-#endif
-
-#define	__sfeof(p)	(((p)->_flags & __SEOF) != 0)
-#define	__sferror(p)	(((p)->_flags & __SERR) != 0)
-#define	__sclearerr(p)	((void)((p)->_flags &= ~(__SERR|__SEOF)))
-#define	__sfileno(p)	((p)->_file)
-
-#define	feof(p)		__sfeof(p)
-#define	ferror(p)	__sferror(p)
-
-#ifndef _POSIX_THREADS
-#define	clearerr(p)	__sclearerr(p)
-#endif
-
-#if __POSIX_VISIBLE
-#define	fileno(p)	__sfileno(p)
-#endif
-
-#ifndef lint
-#ifndef _POSIX_THREADS
-#define	getc(fp)	__sgetc(fp)
-#endif /* _POSIX_THREADS */
-#define	getc_unlocked(fp)	__sgetc(fp)
-/*
- * The macro implementations of putc and putc_unlocked are not
- * fully POSIX compliant; they do not set errno on failure
- */
-#if __BSD_VISIBLE
-#ifndef _POSIX_THREADS
-#define putc(x, fp)	__sputc(x, fp)
-#endif /* _POSIX_THREADS */
-#define putc_unlocked(x, fp)	__sputc(x, fp)
-#endif /* __BSD_VISIBLE */
-#endif /* lint */
-
-#define	getchar()	getc(stdin)
-#define	putchar(x)	putc(x, stdout)
-#define getchar_unlocked()	getc_unlocked(stdin)
-#define putchar_unlocked(c)	putc_unlocked(c, stdout)
-
-#ifdef _GNU_SOURCE
-/*
- * glibc defines dprintf(int, const char*, ...), which is poorly named
- * and likely to conflict with locally defined debugging printfs
- * fdprintf is a better name, and some programs that use fdprintf use a
- * #define fdprintf dprintf for compatibility
- */
-int fdprintf(int, const char*, ...);
-int vfdprintf(int, const char*, __va_list);
-#endif /* _GNU_SOURCE */
+#endif /* defined(__BIONIC_FORTIFY) */
 
 #endif /* _STDIO_H_ */

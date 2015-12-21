@@ -55,13 +55,13 @@
  */
 #define __swap16md(x) ({                                        \
     register u_int16_t _x = (x);                                \
-    __asm volatile ("rev16 %0, %0" : "+l" (_x));                \
+    __asm__ __volatile__("rev16 %0, %0" : "+l" (_x));           \
     _x;                                                         \
 })
 
 #define __swap32md(x) ({                                        \
     register u_int32_t _x = (x);                                \
-    __asm volatile ("rev %0, %0" : "+l" (_x));                  \
+    __asm__ __volatile__("rev %0, %0" : "+l" (_x));             \
     _x;                                                         \
 })
 

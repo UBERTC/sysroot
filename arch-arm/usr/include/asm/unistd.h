@@ -16,15 +16,10 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __ASM_ARM_UNISTD_H
-#define __ASM_ARM_UNISTD_H
+#ifndef _UAPI__ASM_ARM_UNISTD_H
+#define _UAPI__ASM_ARM_UNISTD_H
 #define __NR_OABI_SYSCALL_BASE 0x900000
-#if defined(__thumb__) || defined(__ARM_EABI__)
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __NR_SYSCALL_BASE 0
-#else
-#define __NR_SYSCALL_BASE __NR_OABI_SYSCALL_BASE
-#endif
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __NR_restart_syscall (__NR_SYSCALL_BASE+ 0)
 #define __NR_exit (__NR_SYSCALL_BASE+ 1)
@@ -102,7 +97,7 @@
 #define __NR_sethostname (__NR_SYSCALL_BASE+ 74)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __NR_setrlimit (__NR_SYSCALL_BASE+ 75)
-#define __NR_getrlimit (__NR_SYSCALL_BASE+ 76)  
+#define __NR_getrlimit (__NR_SYSCALL_BASE+ 76)
 #define __NR_getrusage (__NR_SYSCALL_BASE+ 77)
 #define __NR_gettimeofday (__NR_SYSCALL_BASE+ 78)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -141,7 +136,7 @@
 #define __NR_fstat (__NR_SYSCALL_BASE+108)
 #define __NR_vhangup (__NR_SYSCALL_BASE+111)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define __NR_syscall (__NR_SYSCALL_BASE+113)  
+#define __NR_syscall (__NR_SYSCALL_BASE+113)
 #define __NR_wait4 (__NR_SYSCALL_BASE+114)
 #define __NR_swapoff (__NR_SYSCALL_BASE+115)
 #define __NR_sysinfo (__NR_SYSCALL_BASE+116)
@@ -228,7 +223,7 @@
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __NR_sendfile (__NR_SYSCALL_BASE+187)
 #define __NR_vfork (__NR_SYSCALL_BASE+190)
-#define __NR_ugetrlimit (__NR_SYSCALL_BASE+191)  
+#define __NR_ugetrlimit (__NR_SYSCALL_BASE+191)
 #define __NR_mmap2 (__NR_SYSCALL_BASE+192)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __NR_truncate64 (__NR_SYSCALL_BASE+193)
@@ -458,6 +453,11 @@
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __NR_process_vm_readv (__NR_SYSCALL_BASE+376)
 #define __NR_process_vm_writev (__NR_SYSCALL_BASE+377)
+#define __NR_kcmp (__NR_SYSCALL_BASE+378)
+#define __NR_finit_module (__NR_SYSCALL_BASE+379)
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define __NR_sched_setattr (__NR_SYSCALL_BASE+380)
+#define __NR_sched_getattr (__NR_SYSCALL_BASE+381)
 #define __ARM_NR_BASE (__NR_SYSCALL_BASE+0x0f0000)
 #define __ARM_NR_breakpoint (__ARM_NR_BASE+1)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -466,21 +466,19 @@
 #define __ARM_NR_usr32 (__ARM_NR_BASE+4)
 #define __ARM_NR_set_tls (__ARM_NR_BASE+5)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#ifdef __ARM_EABI__
 #undef __NR_time
 #undef __NR_umount
 #undef __NR_stime
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #undef __NR_alarm
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #undef __NR_utime
 #undef __NR_getrlimit
 #undef __NR_select
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #undef __NR_readdir
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #undef __NR_mmap
 #undef __NR_socketcall
 #undef __NR_syscall
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #undef __NR_ipc
-#endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #endif

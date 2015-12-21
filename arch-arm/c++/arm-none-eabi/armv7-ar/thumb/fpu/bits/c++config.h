@@ -31,7 +31,7 @@
 #define _GLIBCXX_CXX_CONFIG_H 1
 
 // The current version of the C++ library in compressed ISO date format.
-#define __GLIBCXX__ 20150716
+#define __GLIBCXX__ 20151204
 
 // Macros for various attributes.
 //   _GLIBCXX_PURE
@@ -576,6 +576,9 @@ namespace std
 /* Define to 1 if you have the `cosl' function. */
 /* #undef _GLIBCXX_HAVE_COSL */
 
+/* Define to 1 if you have the <dirent.h> header file. */
+/* #undef _GLIBCXX_HAVE_DIRENT_H */
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef _GLIBCXX_HAVE_DLFCN_H */
 
@@ -653,6 +656,9 @@ namespace std
 
 /* Define to 1 if you have the `fabsl' function. */
 /* #undef _GLIBCXX_HAVE_FABSL */
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#define _GLIBCXX_HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the <fenv.h> header file. */
 /* #undef _GLIBCXX_HAVE_FENV_H */
@@ -894,6 +900,9 @@ namespace std
 /* Define to 1 if you have the `strtold' function. */
 /* #undef _GLIBCXX_HAVE_STRTOLD */
 
+/* Define to 1 if `d_type' is a member of `struct dirent'. */
+/* #undef _GLIBCXX_HAVE_STRUCT_DIRENT_D_TYPE */
+
 /* Define if strxfrm_l is available in <string.h>. */
 /* #undef _GLIBCXX_HAVE_STRXFRM_L */
 
@@ -927,6 +936,9 @@ namespace std
 
 /* Define to 1 if you have the <sys/sem.h> header file. */
 /* #undef _GLIBCXX_HAVE_SYS_SEM_H */
+
+/* Define to 1 if you have the <sys/statvfs.h> header file. */
+/* #undef _GLIBCXX_HAVE_SYS_STATVFS_H */
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define _GLIBCXX_HAVE_SYS_STAT_H 1
@@ -972,6 +984,9 @@ namespace std
 
 /* Defined if usleep exists. */
 #define _GLIBCXX_HAVE_USLEEP 1
+
+/* Define to 1 if you have the <utime.h> header file. */
+#define _GLIBCXX_HAVE_UTIME_H 1
 
 /* Defined if vfwscanf exists. */
 #define _GLIBCXX_HAVE_VFWSCANF 1
@@ -1345,6 +1360,12 @@ namespace std
    this host. */
 /* #undef _GLIBCXX_USE_DECIMAL_FLOAT */
 
+/* Define if fchmod is available in <sys/stat.h>. */
+#define _GLIBCXX_USE_FCHMOD 1
+
+/* Define if fchmodat is available in <sys/stat.h>. */
+#define _GLIBCXX_USE_FCHMODAT 1
+
 /* Define if __float128 is supported on this host. */
 /* #undef _GLIBCXX_USE_FLOAT128 */
 
@@ -1379,6 +1400,9 @@ namespace std
    of TR1 (Chapter 5.1). */
 /* #undef _GLIBCXX_USE_RANDOM_TR1 */
 
+/* Define if usable realpath is available in <stdlib.h>. */
+/* #undef _GLIBCXX_USE_REALPATH */
+
 /* Defined if sched_yield is available. */
 /* #undef _GLIBCXX_USE_SCHED_YIELD */
 
@@ -1388,23 +1412,38 @@ namespace std
 /* Define if _SC_NPROC_ONLN is available in <unistd.h>. */
 /* #undef _GLIBCXX_USE_SC_NPROC_ONLN */
 
+/* Define if sendfile is available in <sys/stat.h>. */
+/* #undef _GLIBCXX_USE_SENDFILE */
+
+/* Define if struct stat has timespec members. */
+/* #undef _GLIBCXX_USE_ST_MTIM */
+
 /* Define if sysctl(), CTL_HW and HW_NCPU are available in <sys/sysctl.h>. */
 /* #undef _GLIBCXX_USE_SYSCTL_HW_NCPU */
 
 /* Define if obsolescent tmpnam is available in <stdio.h>. */
 #define _GLIBCXX_USE_TMPNAM 1
 
+/* Define if utimensat and UTIME_OMIT are available in <sys/stat.h> and
+   AT_FDCWD in <fcntl.h>. */
+/* #undef _GLIBCXX_USE_UTIMENSAT */
+
 /* Define if code specialized for wchar_t should be used. */
 #define _GLIBCXX_USE_WCHAR_T 1
 
 /* Define to 1 if a verbose library is built, or 0 otherwise. */
-#define _GLIBCXX_VERBOSE 0
+#define _GLIBCXX_VERBOSE 1
 
 /* Defined if as can handle rdrand. */
 /* #undef _GLIBCXX_X86_RDRAND */
 
 /* Define to 1 if mutex_timedlock is available. */
 #define _GTHREAD_USE_MUTEX_TIMEDLOCK 1
+
+/* Define if all C++11 overloads are available in <math.h>.  */
+#if __cplusplus >= 201103L
+/* #undef __CORRECT_ISO_CPP11_MATH_H_PROTO */
+#endif
 
 #if defined (_GLIBCXX_HAVE__ACOSF) && ! defined (_GLIBCXX_HAVE_ACOSF)
 # define _GLIBCXX_HAVE_ACOSF 1

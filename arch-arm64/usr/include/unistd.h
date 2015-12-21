@@ -177,7 +177,7 @@ extern int  acct(const char*  filepath);
 
 int getpagesize(void);
 
-long sysconf(int);
+extern int sysconf(int  name);
 
 extern int daemon(int, int);
 

@@ -327,24 +327,24 @@ media_status_t AMediaDrm_releaseSecureStops(AMediaDrm *,
 /**
  * String property name: identifies the maker of the DRM engine plugin
  */
-#define PROPERTY_VENDOR "vendor"
+const char *PROPERTY_VENDOR = "vendor";
 
 /**
  * String property name: identifies the version of the DRM engine plugin
  */
-#define PROPERTY_VERSION "version"
+const char *PROPERTY_VERSION = "version";
 
 /**
  * String property name: describes the DRM engine plugin
  */
-#define PROPERTY_DESCRIPTION "description"
+const char *PROPERTY_DESCRIPTION = "description";
 
 /**
  * String property name: a comma-separated list of cipher and mac algorithms
  * supported by CryptoSession.  The list may be empty if the DRM engine
  * plugin does not support CryptoSession operations.
  */
-#define PROPERTY_ALGORITHMS "algorithms"
+const char *PROPERTY_ALGORITHMS = "algorithms";
 
 /**
  * Read a DRM engine plugin String property value, given the property name string.
@@ -361,7 +361,7 @@ media_status_t AMediaDrm_getPropertyString(AMediaDrm *, const char *propertyName
  * Byte array property name: the device unique identifier is established during
  * device provisioning and provides a means of uniquely identifying each device.
  */
-#define PROPERTY_DEVICE_UNIQUE_ID "deviceUniqueId"
+const char *PROPERTY_DEVICE_UNIQUE_ID = "deviceUniqueId";
 
 /**
  * Read a DRM engine plugin byte array property value, given the property name string.

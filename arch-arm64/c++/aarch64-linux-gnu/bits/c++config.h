@@ -31,7 +31,7 @@
 #define _GLIBCXX_CXX_CONFIG_H 1
 
 // The current version of the C++ library in compressed ISO date format.
-#define __GLIBCXX__ 20141011
+#define __GLIBCXX__ 20150826
 
 // Macros for various attributes.
 //   _GLIBCXX_PURE
@@ -1343,7 +1343,7 @@ namespace std
 #define _GLIBCXX_USE_WCHAR_T 1
 
 /* Define to 1 if a verbose library is built, or 0 otherwise. */
-#define _GLIBCXX_VERBOSE 0
+#define _GLIBCXX_VERBOSE 1
 
 /* Defined if as can handle rdrand. */
 /* #undef _GLIBCXX_X86_RDRAND */

@@ -31,7 +31,7 @@
 #define _GLIBCXX_CXX_CONFIG_H 1
 
 // The current version of the C++ library in compressed ISO date format.
-#define __GLIBCXX__ 20151010
+#define __GLIBCXX__ 20160413
 
 // Macros for various attributes.
 //   _GLIBCXX_PURE
@@ -294,7 +294,7 @@ namespace std
 # endif
 
 # if _GLIBCXX_USE_CXX11_ABI
-  inline namespace __cxx11 __attribute__((__abi_tag__)) { }
+  inline namespace __cxx11 __attribute__((__abi_tag__ ("cxx11"))) { }
 # endif
   }
 
@@ -733,7 +733,7 @@ namespace std
 #define _GLIBCXX_HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the `isinf' function. */
-#define _GLIBCXX_HAVE_ISINF 1
+/* #undef _GLIBCXX_HAVE_ISINF */
 
 /* Define to 1 if you have the `isinff' function. */
 #define _GLIBCXX_HAVE_ISINFF 1
@@ -742,7 +742,7 @@ namespace std
 #define _GLIBCXX_HAVE_ISINFL 1
 
 /* Define to 1 if you have the `isnan' function. */
-#define _GLIBCXX_HAVE_ISNAN 1
+/* #undef _GLIBCXX_HAVE_ISNAN */
 
 /* Define to 1 if you have the `isnanf' function. */
 #define _GLIBCXX_HAVE_ISNANF 1
@@ -1432,13 +1432,18 @@ namespace std
 #define _GLIBCXX_USE_WCHAR_T 1
 
 /* Define to 1 if a verbose library is built, or 0 otherwise. */
-#define _GLIBCXX_VERBOSE 0
+#define _GLIBCXX_VERBOSE 1
 
 /* Defined if as can handle rdrand. */
 /* #undef _GLIBCXX_X86_RDRAND */
 
 /* Define to 1 if mutex_timedlock is available. */
 #define _GTHREAD_USE_MUTEX_TIMEDLOCK 1
+
+/* Define if all C++11 overloads are available in <math.h>.  */
+#if __cplusplus >= 201103L
+/* #undef __CORRECT_ISO_CPP11_MATH_H_PROTO */
+#endif
 
 #if defined (_GLIBCXX_HAVE__ACOSF) && ! defined (_GLIBCXX_HAVE_ACOSF)
 # define _GLIBCXX_HAVE_ACOSF 1

@@ -1,6 +1,6 @@
 // Class filesystem::path -*- C++ -*-
 
-// Copyright (C) 2014-2015 Free Software Foundation, Inc.
+// Copyright (C) 2014-2016 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -22,7 +22,7 @@
 // see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 // <http://www.gnu.org/licenses/>.
 
-/** @file experimental/fs_path.h
+/** @file experimental/bits/fs_path.h
  *  This is an internal header file, included by other library headers.
  *  Do not attempt to use it directly. @headername{experimental/filesystem}
  */
@@ -345,8 +345,8 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
 
     path(string_type __str, _Type __type) : _M_pathname(__str), _M_type(__type)
     {
-      _GLIBCXX_DEBUG_ASSERT(!empty());
-      _GLIBCXX_DEBUG_ASSERT(_M_type != _Type::_Multi);
+      __glibcxx_assert(!empty());
+      __glibcxx_assert(_M_type != _Type::_Multi);
     }
 
     enum class _Split { _Stem, _Extension };
@@ -549,16 +549,6 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
     std::string _M_what = _M_gen_what();
   };
 
-  struct path::_Cmpt : path
-  {
-    _Cmpt(string_type __s, _Type __t, size_t __pos)
-      : path(std::move(__s), __t), _M_pos(__pos) { }
-
-    _Cmpt() : _M_pos(-1) { }
-
-    size_t _M_pos;
-  };
-
   template<>
     struct path::__is_encoded_char<char> : std::true_type
     { using value_type = char; };
@@ -574,6 +564,16 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
   template<>
     struct path::__is_encoded_char<char32_t> : std::true_type
     { using value_type = char32_t; };
+
+  struct path::_Cmpt : path
+  {
+    _Cmpt(string_type __s, _Type __t, size_t __pos)
+      : path(std::move(__s), __t), _M_pos(__pos) { }
+
+    _Cmpt() : _M_pos(-1) { }
+
+    size_t _M_pos;
+  };
 
   // specialize _Cvt for degenerate 'noconv' case
   template<>
@@ -956,15 +956,15 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
   inline path::iterator&
   path::iterator::operator++()
   {
-    _GLIBCXX_DEBUG_ASSERT(_M_path != nullptr);
+    __glibcxx_assert(_M_path != nullptr);
     if (_M_path->_M_type == _Type::_Multi)
       {
-	_GLIBCXX_DEBUG_ASSERT(_M_cur != _M_path->_M_cmpts.end());
+	__glibcxx_assert(_M_cur != _M_path->_M_cmpts.end());
 	++_M_cur;
       }
     else
       {
-	_GLIBCXX_DEBUG_ASSERT(!_M_at_end);
+	__glibcxx_assert(!_M_at_end);
 	_M_at_end = true;
       }
     return *this;
@@ -973,15 +973,15 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
   inline path::iterator&
   path::iterator::operator--()
   {
-    _GLIBCXX_DEBUG_ASSERT(_M_path != nullptr);
+    __glibcxx_assert(_M_path != nullptr);
     if (_M_path->_M_type == _Type::_Multi)
       {
-	_GLIBCXX_DEBUG_ASSERT(_M_cur != _M_path->_M_cmpts.begin());
+	__glibcxx_assert(_M_cur != _M_path->_M_cmpts.begin());
 	--_M_cur;
       }
     else
       {
-	_GLIBCXX_DEBUG_ASSERT(_M_at_end);
+	__glibcxx_assert(_M_at_end);
 	_M_at_end = false;
       }
     return *this;
@@ -990,10 +990,10 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
   inline path::iterator::reference
   path::iterator::operator*() const
   {
-    _GLIBCXX_DEBUG_ASSERT(_M_path != nullptr);
+    __glibcxx_assert(_M_path != nullptr);
     if (_M_path->_M_type == _Type::_Multi)
       {
-	_GLIBCXX_DEBUG_ASSERT(_M_cur != _M_path->_M_cmpts.end());
+	__glibcxx_assert(_M_cur != _M_path->_M_cmpts.end());
 	return *_M_cur;
       }
     return *_M_path;

@@ -1,6 +1,6 @@
 // Low-level type for atomic operations -*- C++ -*-
 
-// Copyright (C) 2015 Free Software Foundation, Inc.
+// Copyright (C) 2004-2016 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -29,16 +29,12 @@
 #ifndef _GLIBCXX_ATOMIC_WORD_H
 #define _GLIBCXX_ATOMIC_WORD_H	1
 
-
 typedef int _Atomic_word;
 
-// This one prevents loads from being hoisted across the barrier;
-// in other words, this is a Load-Load acquire barrier.
-// This is necessary iff TARGET_RELAXED_ORDERING is defined in tm.h.
-#define _GLIBCXX_READ_MEM_BARRIER __atomic_thread_fence (__ATOMIC_ACQUIRE)
 
-// This one prevents stores from being sunk across the barrier; in other
-// words, a Store-Store release barrier.
+// This is a memory order acquire fence.
+#define _GLIBCXX_READ_MEM_BARRIER __atomic_thread_fence (__ATOMIC_ACQUIRE)
+// This is a memory order release fence.
 #define _GLIBCXX_WRITE_MEM_BARRIER __atomic_thread_fence (__ATOMIC_RELEASE)
 
-#endif
+#endif 

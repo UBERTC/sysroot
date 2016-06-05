@@ -1,6 +1,6 @@
 // Specific definitions for generic platforms  -*- C++ -*-
 
-// Copyright (C) 2005-2015 Free Software Foundation, Inc.
+// Copyright (C) 2015-2016 Free Software Foundation, Inc.
 //
 // This file is part of the GNU ISO C++ Library.  This library is free
 // software; you can redistribute it and/or modify it under the
@@ -29,5 +29,12 @@
 
 #ifndef _GLIBCXX_CPU_DEFINES
 #define _GLIBCXX_CPU_DEFINES 1
+
+// Integer divide instructions don't trap on ARM.
+#ifdef __ARM_ARCH_EXT_IDIV__
+#define __glibcxx_integral_traps false
+#else
+#define __glibcxx_integral_traps true
+#endif
 
 #endif
